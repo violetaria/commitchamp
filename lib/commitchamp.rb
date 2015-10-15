@@ -11,22 +11,46 @@ module Commitchamp
     end
 
     def run
-      # Your code goes here...
+      token = prompt_user("Enter your auth token: ",/^.+$/)
+      org = prompt_user("Enter an organization: ",/^.+$/)
+      repo = prompt_user("Enter a repository: ",/^.+$/)
+      ## TODO do we want to check the organizations for the repos they have and have the user pick from that list?
+      git_api = GitHub.new(token)
+
+      contributors = git_api.get_contributors(org,repo)
+
+      data = Hash.new
+
+      contributors.each do |x|
+        user = x["author"]["login"].to_sym
+        data[user] = Hash.new(0)
+        data[user][:total_commits] = x["total"]
+        weeks = x["weeks"]
+        weeks.each do |w|
+          data[user][:adds] += w["a"]
+          data[user][:deletes] += w["d"]
+          data[user][:commits] += w["c"]
+        end
+        puts "user: #{user} data: #{data[user]}"
+      end
+      binding.pry
     end
 
 
+    private
+    def prompt_user(text,regex)
+      print text
+      input = STDIN.gets.chomp
+      until input =~ regex
+        print text
+        input = STDIN.gets.chomp
+      end
+      input
+    end
 
   end
 end
 
-print "Please enter your Auth Token: "
-token = gets.chomp
-print "Please enter an organization: "
-org = gets.chomp
-
-## TODO do we want to check the organizations for the repos they have and have the user pick from that list?
-print "Please choose a repository: "
-repo = gets.chomp
 
 app = Commitchamp::App.new
 app.run

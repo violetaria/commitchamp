@@ -19,4 +19,3 @@ module Commitchamp
 end
 
 
-binding.pry
