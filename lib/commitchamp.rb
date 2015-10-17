@@ -16,7 +16,7 @@ module Commitchamp
     def run
       @token = prompt_user("Enter your auth token: ",/^.+$/)
       @org = prompt_user("Enter an organization: ",/^.+$/)
-      @repo = prompt_user("Enter a repository: ",/^.+$/)
+      @repo = prompt_user("Enter a repository: ",//)
       ## TODO do we want to check the organizations for the repos they have and have the user pick from that list?
       contributors = query_data
       data = build_data(contributors)
@@ -31,7 +31,7 @@ module Commitchamp
         ordered_data = sort_data(data,sort_order)
         show_data(ordered_data,sort_order)
         input = prompt_user(
-           "Choose an option:
+           "\nChoose an option:
             (S) Sort the data differently
             (F) Fetch another repo
             (Q) Quit\n",/^[FQS]$/i).upcase
@@ -103,7 +103,6 @@ module Commitchamp
     end
 
     def prompt_user(text,regex)
-      puts
       print text
       input = STDIN.gets.chomp
       until input =~ regex
