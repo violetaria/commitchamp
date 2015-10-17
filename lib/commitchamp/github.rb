@@ -15,7 +15,12 @@ module Commitchamp
                     headers: @auth)
     end
 
+    def get_repos(org,options={})
+      self.class.get("/orgs/#{org}/repos",
+                    headers: @auth,
+                    body: options.to_json)
+    end
+
   end
 end
-
 
