@@ -15,7 +15,7 @@ module Commitchamp
       token = prompt_user("Enter your auth token: ",/^.+$/)
       git_api = GitHub.new(token)
       org = prompt_user("Enter an owner or organization: ",/^.+$/)
-      repos = prompt_user("Enter a repository or blank to pull all repos for an org: ",//).split
+      repos = prompt_user("Enter a repository (leave blank for all repos for an org): ",//).split
       if repos.count == 0
         repo_data = git_api.get_repos(org)
         repos = repo_data.map { |x| x["name"] }
@@ -37,15 +37,13 @@ module Commitchamp
         show_data(ordered_data,sort_order,"#{org}/#{repo}")
         input = prompt_user("\nChoose an option:\n  (S) Sort the data differently\n  (F) Fetch another repo\n  (Q) Quit\n",/^[FQS]$/i).upcase
       end
-
-      binding.pry
     end
 
 
     private
 
     def get_sort_order
-      sort_key = prompt_user("\nChoose a sort order:\n  (A) lines Added\n  (D) lines Deleted\n  (C) lines Changed\n  (T) Total Add/Delete/Changes\n",/^[ADCT]$/i).upcase
+      sort_key = prompt_user("\nChoose a sort order:\n  (A) Lines Added\n  (D) Lines Deleted\n  (C) Lines Changed\n  (T) Total Commits\n",/^[ADCT]$/i).upcase
       case sort_key
         when "A"
           :adds
@@ -70,7 +68,7 @@ module Commitchamp
       puts "### Contributions for '#{title}'"
       puts "##  Ordered by #{order.to_s}"
       puts
-      printf("%-20s%10s%10s%10s%10s\n", "Username","Additions","Deletions","Changes","Total")
+      printf("%-20s%10s%10s%10s%10s\n", "Username","Additions","Deletions","Changes","Commits")
       ordered_data.each do |key, value|
         printf("%-20s%10s%10s%10s%10s\n", "#{key.to_s}","#{value[:adds]}","#{value[:deletes]}","#{value[:changes]}","#{value[:total]}")
       end
@@ -84,8 +82,8 @@ module Commitchamp
         weeks.each do |w|
           @data[user][:adds] += w["a"]
           @data[user][:deletes] += w["d"]
-          @data[user][:changes] += w["c"]
-          @data[user][:total] += (w["a"] + w["d"] + w["c"])
+          @data[user][:changes] += (w["a"] + w["d"])
+          @data[user][:total] += w["c"]
         end
       end
     end
