@@ -9,38 +9,42 @@ module Commitchamp
   class App
     def initialize
       @data = Hash.new
+      @git_api = nil
     end
 
     def run
-      token = prompt_user("Enter your auth token: ",/^.+$/)
-      git_api = GitHub.new(token)
-      org = prompt_user("Enter an owner or organization: ",/^.+$/)
-      repos = prompt_user("Enter a repository (leave blank for all repos for an org): ",//).split
-      if repos.count == 0
-        repo_data = git_api.get_repos(org)
-        repos = repo_data.map { |x| x["name"] }
-      end
-      repos.each do |repo|
-        contributors = git_api.get_contributors(org,repo)
-        build_data(contributors) unless contributors.nil?
-      end
+      token = prompt_user("Enter auth token: ",/^.+$/)
+      @git_api = GitHub.new(token)
+      org = prompt_user("Enter owner or organization: ",/^.+$/)
+      repo_input = prompt_user("Enter repository (leave blank for all repos): ",//)
+      repos = get_repos(org,repo_input)
+      build_data(org,repos)
       input = nil
       until input == "Q"
         if input == "F"
           @data = Hash.new
-          repo = prompt_user("Enter a repository: ",/^.+$/)
-          contributors = git_api.get_contributors(org,repo)
-          build_data(contributors) unless contributors.nil?
+          repo_input = prompt_user("Enter repository (leave blank for all repos): ",//)
+          repos = get_repos(org,repo_input)
+          build_data(org,repos)
         end
         sort_order = get_sort_order
         ordered_data = sort_data(sort_order)
-        show_data(ordered_data,sort_order,"#{org}/#{repo}")
+        show_data(ordered_data,sort_order,"#{org}/#{repo_input}")
         input = prompt_user("\nChoose an option:\n  (S) Sort the data differently\n  (F) Fetch another repo\n  (Q) Quit\n",/^[FQS]$/i).upcase
       end
     end
 
 
     private
+    def get_repos(org,input)
+      if input == ""
+        repo_data = @git_api.get_repos(org)
+        repos = repo_data.map { |x| x["name"] }
+      else
+        repos = [input]
+      end
+      repos
+    end
 
     def get_sort_order
       sort_key = prompt_user("\nChoose a sort order:\n  (A) Lines Added\n  (D) Lines Deleted\n  (C) Lines Changed\n  (T) Total Commits\n",/^[ADCT]$/i).upcase
@@ -74,16 +78,19 @@ module Commitchamp
       end
     end
 
-    def build_data(contributors)
-      contributors.each do |x|
-        user = x["author"]["login"].to_sym
-        @data[user] = Hash.new(0)
-        weeks = x["weeks"]
-        weeks.each do |w|
-          @data[user][:adds] += w["a"]
-          @data[user][:deletes] += w["d"]
-          @data[user][:changes] += (w["a"] + w["d"])
-          @data[user][:total] += w["c"]
+    def build_data(org,repos)
+      repos.each do |repo|
+        contributors = @git_api.get_contributors(org,repo)
+        contributors.each do |x|
+          user = x["author"]["login"].to_sym
+          @data[user] = Hash.new(0)
+          weeks = x["weeks"]
+          weeks.each do |w|
+            @data[user][:adds] += w["a"]
+            @data[user][:deletes] += w["d"]
+            @data[user][:changes] += (w["a"] + w["d"])
+            @data[user][:total] += w["c"]
+          end
         end
       end
     end
