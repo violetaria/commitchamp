@@ -21,6 +21,15 @@ module Commitchamp
                     body: options.to_json)
     end
 
+=begin
+      def get_collaborators(org,repo)
+      response = self.class.get("/repos/#{org}/#{repo}/collaborators",
+                     headers: @auth)
+      response
+    end
+=end
+
   end
 end
 
+#binding.pry

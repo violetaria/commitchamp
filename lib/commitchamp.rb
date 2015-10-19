@@ -83,7 +83,7 @@ module Commitchamp
         contributors = @git_api.get_contributors(org,repo)
         contributors.each do |x|
           user = x["author"]["login"].to_sym
-          @data[user] = Hash.new(0)
+          @data[user] ||= Hash.new(0)
           weeks = x["weeks"]
           weeks.each do |w|
             @data[user][:adds] += w["a"]
