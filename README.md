@@ -1,38 +1,44 @@
 # Commitchamp
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/commitchamp`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'commitchamp'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install commitchamp
+A program that allows the user to choose an organization and repository (or all repositories under an organization) and calculate who committed the most!
 
 ## Usage
 
-TODO: Write usage instructions here
+To run, use bundle!  `bundle exec ruby lib/commitchamp.rb`
 
-## Development
+Users must enter their Github API Authorization Token to use the application.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Example output
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
+Enter owner or organization: rails
+Enter repository (leave blank for all repos): rails
+
+Choose a sort order:
+  (A) Lines Added
+  (D) Lines Deleted
+  (C) Lines Changed
+  (T) Total Commits
+a
+
+### Contributions for 'rails/rails'
+##  Ordered by adds
+
+Username             Additions Deletions   Changes   Commits
+lifo                    362202    380035    742237       753
+dhh                     202926    103798    306724      3429
+josevalim               179041    185469    364510      1530
+jeremy                  134350    111290    245640      3194
+josh                    123271    133652    256923      1084
+gbuesing                100657     81856    182513       129
+fxn                      80257    104411    184668      1541
+sikachu                  55274     59094    114368       196
+FooBarWidget             52309     48981    101290        96
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/commitchamp. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/violetaria/commitchamp. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 
 ## License
